@@ -1,0 +1,39 @@
+import turtle
+import pandas
+
+data = pandas.read_csv("D:\\Python\\Python Bootcamp\\Day 25\Guess the state game\\50_states.csv")
+state_list = []
+
+for line in range(50):
+    state_list.append(data.state[line])
+
+print(state_list)
+
+screen = turtle.Screen()
+screen.title("U.S State Game")
+image = "blank_states_img.gif"
+screen.addshape(image)
+turtle.shape()
+
+writing = turtle()
+writing.penup()
+writing.goto(100, 100)
+writing.write("Test")
+
+number_of_correct_guesses = 0
+correct_guesses = []
+
+answer_state = screen.textinput(title=f"Guess the state {correct_guesses}/50", prompt="What's another state's name?")
+answer_state = answer_state.title()
+
+
+if answer_state in state_list:
+    number_of_correct_guesses += 1
+    correct_guesses.append(answer_state)
+else:
+    print("NO")
+
+
+
+
+screen.mainloop()
