@@ -3,27 +3,45 @@ import pandas
 import random
 BACKGROUND_COLOR = "#B1DDC6"
 FONT_NAME = "Ariel"
-random_french = ""
-random_english = ""
+
 # ---------------------------- Data ------------------------------- #
 data = pandas.read_csv(
     r"D:\Python\Python Bootcamp\Day 31\data\french_words.csv")
 data_dict = data.to_dict(orient="records")
-
+words_to_learn = data_dict.remove()
+known = {}
+current_card = {}
 
 def generate_new():
-
-    global random_french, random_english, create_description
-    current_card = random.choice(data_dict)
-    canvas.itemconfig(create_title, text="French")
-    canvas.itemconfig(create_description, text=current_card["French"])
+    
+    global current_card, flip_timer
+    window.after_cancel(flip_timer)
+    try:
+        current_card = random.choice(words_to_learn)
+    except FileNotFoundError:
+        data.to_dict(orient="records")
+        current_card = random.choice(data_dict)
+    canvas.itemconfig(create_title, text="French", fill="black")
+    canvas.itemconfig(create_description, text=current_card["French"], fill="black")
+    canvas.itemconfig(main_photo, image=card_front_png)
+    flip_timer = window.after(3000, func=flip_card)
+    
 
 
 # ---------------------------- GUI ------------------------------- #
 # Window config
+
+def flip_card():
+    canvas.itemconfig(main_photo, image=card_back_png)
+    canvas.itemconfig(create_title, text="English", fill="white")
+    canvas.itemconfig(create_description, text=current_card["English"], fill="white")
+    
+
 window = Tk()
 window.title("Flash card Project")
 window.config(padx=50, pady=50, background=BACKGROUND_COLOR)
+
+flip_timer = window.after(3000, func=flip_card)
 
 # Addressing photos
 card_front_png = PhotoImage(
@@ -39,10 +57,7 @@ main_photo = canvas.create_image(400, 263, image=card_front_png)
 create_title = canvas.create_text(
     400, 150, text="French", font=(FONT_NAME, 40, "italic"))
 create_description = canvas.create_text(
-    400, 263, text=random_french, font=(FONT_NAME, 60, "bold"))
-
-window.after(3)
-canvas.itemconfig(main_photo, image=card_back_png)
+    400, 263, text="", font=(FONT_NAME, 60, "bold"))
 canvas.grid(row=0, column=0, columnspan=2)
 
 
