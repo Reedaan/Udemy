@@ -5,28 +5,41 @@ BACKGROUND_COLOR = "#B1DDC6"
 FONT_NAME = "Ariel"
 
 # ---------------------------- Data ------------------------------- #
-data = pandas.read_csv(
-    r"D:\Python\Python Bootcamp\Day 31\data\french_words.csv")
-data_dict = data.to_dict(orient="records")
-words_to_learn = data_dict.remove()
+try:
+    data = pandas.read_csv(
+        r"D:\Python\Python Bootcamp\Day 31\data\words_to_learn.csv")
+    data_dict = data.to_dict(orient="records")
+except FileNotFoundError:
+    data = pandas.read_csv(r"D:\Python\Python Bootcamp\Day 31\data\french_words.csv")
+    data_dict = data.to_dict(orient="records")
+
 known = {}
 current_card = {}
+
+def add_to_known():
+    global current_card, flip_timer
+    window.after_cancel(flip_timer)
+    current_card = random.choice(data_dict)
+    canvas.itemconfig(create_title, text="French", fill="black")
+    canvas.itemconfig(create_description, text=current_card["French"], fill="black")
+    canvas.itemconfig(main_photo, image=card_front_png)
+    flip_timer = window.after(3000, func=flip_card)
+    if current_card in data_dict and not known:
+        data_dict.remove(current_card)
+        known[current_card["French"]]
+        print(known)
+
 
 def generate_new():
     
     global current_card, flip_timer
     window.after_cancel(flip_timer)
-    try:
-        current_card = random.choice(words_to_learn)
-    except FileNotFoundError:
-        data.to_dict(orient="records")
-        current_card = random.choice(data_dict)
+    current_card = random.choice(data_dict)
     canvas.itemconfig(create_title, text="French", fill="black")
     canvas.itemconfig(create_description, text=current_card["French"], fill="black")
     canvas.itemconfig(main_photo, image=card_front_png)
     flip_timer = window.after(3000, func=flip_card)
     
-
 
 # ---------------------------- GUI ------------------------------- #
 # Window config
@@ -67,7 +80,7 @@ x_button = Button(image=x_image, highlightthickness=0, command=generate_new)
 x_button.grid(row=1, column=0)
 
 y_image = PhotoImage(file=r"D:\Python\Python Bootcamp\Day 31\images\right.png")
-y_button = Button(image=y_image, highlightthickness=0, command=generate_new)
+y_button = Button(image=y_image, highlightthickness=0, command=add_to_known)
 y_button.grid(row=1, column=1)
 
 
